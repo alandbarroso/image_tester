@@ -32,6 +32,9 @@
       function test_image_url(){
         var image_url = document.getElementById("image_url_input").value;
 
+        var image_content = document.getElementById("image_content");
+        image_content.innerHTML = "";
+
         console.log("Testing image: " + image_url);
 
         var request_number = 1;
@@ -39,30 +42,29 @@
           xmlHttp.onload = function() { 
               if (xmlHttp.status == 200){
                 console.log("Image got")
-                change_status_code(xmlHttp.status)
-
-                image_content = document.getElementById("image_content");
-                image_content.innerHTML = "";
+                change_status_code(xmlHttp.statusText)
 
                 img = document.createElement("img");
                 img.src = image_url;
 
                 image_content.appendChild(img);
               }
-              else {
-                // Retry
-                request_number += 1;
-                
-                console.log("Try #" + request_number);
-                change_try_number(request_number);
+          }
 
-                console.log("Status" + xmlHttp.status);
-                change_status_code(xmlHttp.status)
-                
-                setTimeout(function () {
-                  xmlHttp.open("GET", image_url, true);
-                }, 10000);
-              }
+          xmlHttp.onerror = function() {
+            // Retry
+            request_number += 1;
+            
+            console.log("Try #" + request_number);
+            change_try_number(request_number);
+
+            console.log("Status" + xmlHttp.statusText);
+            change_status_code(xmlHttp.statusText)
+            
+            setTimeout(function () {
+              xmlHttp.open("GET", image_url, true);
+              xmlHttp.send(null);
+            }, 10000);
           }
 
           console.log("Try #" + request_number);
